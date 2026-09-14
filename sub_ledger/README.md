@@ -19,11 +19,11 @@ They are written to `synsap_finance`, the product schema, rather than to
 `synsap_finance_raw`. The raw schema is the CDC landing zone and holds only what
 the source system sent; anything built belongs on the other side of that line.
 
-Consumed by
-[fin-invoice-to-pay](https://github.com/blueprint-demo-org/fin-invoice-to-pay)
-and
-[credit_to_cash](https://github.com/blueprint-demo-org/credit_to_cash), so this
-project has to run before either of them.
+On the platform, the payables and receivables products are built on top of these
+tables, so this project runs before either of them.
+
+> **Adapting this project:** `profiles/profiles.yml` writes to a platform schema you
+> cannot write to. Change `schema:` to your own `pgXXXX` schema first.
 
 ## Clearing
 

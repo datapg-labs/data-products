@@ -33,6 +33,20 @@ instead. Kafka works end to end.
     README.md
 ```
 
+## Reference projects
+
+Two complete dbt projects sit at the top of the repo as worked examples. Read them
+before starting your own:
+
+| Project | What it builds | Reads |
+|---|---|---|
+| [`sub_ledger`](sub_ledger/) | SAP open/cleared item indexes (BSID, BSAD, BSIK, BSAK) derived from BSEG | `synsap_finance_raw` |
+| [`asset_transactions`](asset_transactions/) | Fixed-asset transactions from the SAP asset tables | `synsap_finance_raw` |
+
+Both read only tables you can query. Their `profiles/profiles.yml` targets the
+platform's own schemas, which you cannot write to: if you adapt one, change
+`schema:` to your own `pgXXXX` schema.
+
 ## Querying the lakehouse meanwhile
 
 You do not need dbt to explore the data. Open **Hue** from the launchpad and
