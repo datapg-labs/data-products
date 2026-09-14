@@ -1,0 +1,24 @@
+name: 'sub_ledger'
+version: '1.0.0'
+config-version: 2
+
+profile: 'sub_ledger'
+model-paths: ["models"]
+
+models:
+  sub_ledger:
+    +file_format: iceberg
+    staging:
+      +materialized: ephemeral
+      +tags: ["staging"]
+    intermediate:
+      # Tables, not ephemeral. An ephemeral model is inlined into every model
+      # that selects from it, so the deduplication of the whole of BSEG - by far
+      # the most expensive step here - was being executed once for each of the
+      # four open-item tables. Four full passes over the ledger to produce four
+      # filters of the same result.
+      +materialized: table
+      +tags: ["intermediate"]
+    serving:
+      +materialized: table
+      +tags: ["serving_layer", "finance", "sub_ledger"]

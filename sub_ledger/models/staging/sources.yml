@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: sap_finance_raw
+    schema: synsap_finance_raw
+    tables:
+      # BSEG is the only source. The open-item tables are indexes over it, so
+      # deriving them here is what keeps them from drifting away from the
+      # ledger the way the hand-loaded ones did.
+      - name: bseg
+        loaded_at_field: __ts
