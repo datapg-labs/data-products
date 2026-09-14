@@ -1,0 +1,168 @@
+version: 2
+
+sources:
+  - name: sap_s4
+    schema: synsap_finance_raw
+    description: "SAP S/4HANA Finance Asset Accounting Tables"
+    tables:
+      - name: anla
+        description: "Asset Master Record Segment"
+        columns:
+          - name: bukrs
+            description: "Company Code"
+          - name: anln1
+            description: "Main Asset Number"
+          - name: anln2
+            description: "Asset Subnumber"
+          - name: anlkl
+            description: "Asset Class"
+          - name: txt50
+            description: "Asset Description"
+          - name: aktiv
+            description: "Asset Capitalization Date"
+          - name: deakt
+            description: "Asset Deactivation Date"
+          - name: ernam
+            description: "Name of Person who Created the Object"
+          - name: erdat
+            description: "Date on Which Record Was Created"
+          - name: aenam
+            description: "Name of Person Who Changed Object"
+          - name: aedat
+            description: "Date of Last Change"
+          - name: zugdt
+            description: "Asset Value Date of First Posting"
+          - name: invnr
+            description: "Inventory Number"
+          - name: lifnr
+            description: "Account Number of Vendor or Creditor"
+          - name: ktogr
+            description: "Account Determination"
+          - name: xloev
+            description: "Asset is marked for deletion"
+      - name: anlz
+        description: "Time-Dependent Asset Allocations"
+        columns:
+          - name: bukrs
+            description: "Company Code"
+          - name: anln1
+            description: "Main Asset Number"
+          - name: anln2
+            description: "Asset Subnumber"
+          - name: bdatu
+            description: "Date to which the segment is valid"
+          - name: adatu
+            description: "Date from which the segment is valid"
+          - name: kostl
+            description: "Cost Center"
+          - name: werksi
+            description: "Plant"
+          - name: gsber
+            description: "Business Area"
+          - name: prctr
+            description: "Profit Center"
+          - name: segment
+            description: "Segment for Segmental Reporting"
+          - name: lstar
+            description: "Activity Type"
+      - name: anep
+        description: "Asset Line Items (Legacy)"
+        columns:
+          - name: bukrs
+            description: "Company Code"
+          - name: anln1
+            description: "Main Asset Number"
+          - name: anln2
+            description: "Asset Subnumber"
+          - name: gjahr
+            description: "Fiscal Year"
+          - name: lnsan
+            description: "Sequence Number of Asset Line Item"
+          - name: belnr
+            description: "Accounting Document Number"
+          - name: buzei
+            description: "Document Line Item"
+          - name: afabe
+            description: "Real Depreciation Area"
+          - name: bwasl
+            description: "Asset Transaction Type"
+          - name: bzdat
+            description: "Asset Value Date"
+          - name: anbtr
+            description: "Amount Posted"
+
+      - name: faat_doc_it
+        description: "Universal Journal Asset Line Items (New)"
+        columns:
+          - name: bukrs
+            description: "Company Code"
+          - name: anln1
+            description: "Main Asset Number"
+          - name: anln2
+            description: "Asset Subnumber"
+          - name: gjahr
+            description: "Fiscal Year"
+          - name: belnr
+            description: "Accounting Document Number"
+          - name: docln
+            description: "Six-Character Line Item Number"
+          - name: slalittype
+            description: "Subledger Line Item Type"
+          - name: tsl
+            description: "Amount in Transaction Currency"
+          - name: hsl
+            description: "Amount in Company Code Currency"
+          - name: ksl
+            description: "Amount in Global Currency"
+          - name: osl
+            description: "Amount in Freely Defined Currency 1"
+          - name: bwasl
+            description: "Asset Transaction Type"
+          - name: afabe
+            description: "Real Depreciation Area"
+          - name: bzdat
+            description: "Asset Value Date"
+  - name: sap_s4_raw
+    schema: synsap_finance_raw
+    description: "SAP S/4HANA Finance General Ledger Tables"
+    tables:
+      - name: bkpf
+        description: "Accounting Document Header"
+        loaded_at_field: __ts
+        columns:
+          - name: mandt
+            description: "Client"
+          - name: bukrs
+            description: "Company Code"
+          - name: belnr
+            description: "Accounting Document Number"
+          - name: gjahr
+            description: "Fiscal Year"
+          - name: blart
+            description: "Document Type"
+          - name: bldat
+            description: "Document Date in Document"
+          - name: budat
+            description: "Posting Date in the Document"
+          - name: cpudt
+            description: "Day On Which Accounting Document Was Entered"
+          - name: cputm
+            description: "Time of Entry"
+          - name: usnam
+            description: "User Name"
+          - name: tcode
+            description: "Transaction Code"
+          - name: waers
+            description: "Currency Key"
+          - name: kursf
+            description: "Exchange Rate"
+          - name: bktxt
+            description: "Document Header Text"
+          - name: awtyp
+            description: "Reference Procedure"
+          - name: awkey
+            description: "Reference Key"
+          - name: __op
+            description: "CDC operation: I / U / D"
+          - name: __ts
+            description: "CDC change sequence"

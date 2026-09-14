@@ -1,0 +1,12 @@
+asset_transactions:
+  target: dev
+  outputs:
+    dev:
+      type: spark
+      method: session
+      host: datapg
+      schema: synsap_finance_assets
+      threads: 1
+      spark_conf:
+        spark.hadoop.fs.s3a.connection.timeout: "60000"
+        spark.hadoop.fs.s3a.socket.timeout: "60000"

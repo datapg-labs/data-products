@@ -1,0 +1,196 @@
+version: 2
+
+models:
+  - name: stg_sap__anla
+    description: "Staging model for SAP Asset Master Record (ANLA). Deduplicated to one current master per asset (latest by change/creation date) because the source re-emits each asset many times without a version column."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+    columns:
+      - name: company_code
+        description: "Company Code (BUKRS)"
+      - name: asset_main_number
+        description: "Main Asset Number (ANLN1)"
+      - name: asset_sub_number
+        description: "Asset Subnumber (ANLN2)"
+      - name: asset_class
+        description: "Asset Class (ANLKL)"
+      - name: asset_description
+        description: "Asset Description (TXT50)"
+      - name: capitalization_date
+        description: "Asset Capitalization Date (AKTIV)"
+      - name: deactivation_date
+        description: "Asset Deactivation Date (DEAKT)"
+      - name: created_by
+        description: "Name of Person who Created the Object (ERNAM)"
+      - name: created_date
+        description: "Date on Which Record Was Created (ERDAT)"
+      - name: changed_by
+        description: "Name of Person Who Changed Object (AENAM)"
+      - name: changed_date
+        description: "Date of Last Change (AEDAT)"
+      - name: first_acquisition_date
+        description: "Asset Value Date of First Posting (ZUGDT)"
+      - name: inventory_number
+        description: "Inventory Number (INVNR)"
+      - name: vendor_account
+        description: "Account Number of Vendor or Creditor (LIFNR)"
+      - name: account_determination
+        description: "Account Determination (KTOGR)"
+      - name: is_deleted
+        description: "Asset is marked for deletion flag (XLOEV)"
+
+  - name: stg_sap__anlz
+    description: "Staging model for Time-Dependent Asset Allocations (ANLZ). Reduced to the current time-slice (latest valid-from) per asset, giving one organizational assignment per asset."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+    columns:
+      - name: company_code
+        description: "Company Code (BUKRS)"
+      - name: asset_main_number
+        description: "Main Asset Number (ANLN1)"
+      - name: asset_sub_number
+        description: "Asset Subnumber (ANLN2)"
+      - name: valid_to_date
+        description: "Date to which the segment is valid (BDATU)"
+      - name: valid_from_date
+        description: "Date from which the segment is valid (ADATU)"
+      - name: cost_center
+        description: "Cost Center (KOSTL)"
+      - name: plant
+        description: "Plant (WERKSI)"
+      - name: business_area
+        description: "Business Area (GSBER)"
+      - name: profit_center
+        description: "Profit Center (PRCTR)"
+      - name: segment
+        description: "Segment for Segmental Reporting (SEGMENT)"
+      - name: activity_type
+        description: "Activity Type (LSTAR)"
+
+  - name: stg_sap__anep
+    description: "Staging model for Asset Line Items (ANEP - Legacy). Grain is one row per asset transaction line, keyed by document number and line."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+            - fiscal_year
+            - sequence_number
+            - depreciation_area
+            - document_number
+            - document_line
+    columns:
+      - name: company_code
+        description: "Company Code (BUKRS)"
+      - name: asset_main_number
+        description: "Main Asset Number (ANLN1)"
+      - name: asset_sub_number
+        description: "Asset Subnumber (ANLN2)"
+      - name: fiscal_year
+        description: "Fiscal Year (GJAHR)"
+      - name: sequence_number
+        description: "Sequence Number of Asset Line Item (LNSAN)"
+      - name: document_number
+        description: "Accounting Document Number (BELNR)"
+      - name: document_line
+        description: "Document Line Item (BUZEI)"
+      - name: depreciation_area
+        description: "Real Depreciation Area (AFABE)"
+      - name: transaction_type_code
+        description: "Asset Transaction Type (BWASL)"
+      - name: asset_value_date
+        description: "Asset Value Date (BZDAT)"
+      - name: transaction_amount
+        description: "Amount Posted (ANBTR)"
+
+  - name: stg_sap__faat_doc_it
+    description: "Staging model for Universal Journal Asset Line Items (FAAT_DOC_IT - New). Primary source for modern asset transactions."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+            - fiscal_year
+            - document_number
+            - document_line_item
+    columns:
+      - name: company_code
+        description: "Company Code (BUKRS)"
+      - name: asset_main_number
+        description: "Main Asset Number (ANLN1)"
+      - name: asset_sub_number
+        description: "Asset Subnumber (ANLN2)"
+      - name: fiscal_year
+        description: "Fiscal Year (GJAHR)"
+      - name: document_number
+        description: "Accounting Document Number (BELNR)"
+      - name: document_line_item
+        description: "Six-Character Line Item Number (DOCLN)"
+      - name: subledger_line_item_type
+        description: "Subledger Line Item Type (SLALITTYPE)"
+      - name: amount_in_transaction_currency
+        description: "Amount in Transaction Currency (TSL)"
+      - name: amount_in_company_code_currency
+        description: "Amount in Company Code Currency (HSL)"
+      - name: amount_in_global_currency
+        description: "Amount in Global Currency (KSL)"
+      - name: amount_in_freely_defined_currency
+        description: "Amount in Freely Defined Currency 1 (OSL)"
+      - name: transaction_type_code
+        description: "Asset Transaction Type (BWASL)"
+      - name: depreciation_area
+        description: "Real Depreciation Area (AFABE)"
+      - name: asset_value_date
+        description: "Asset Value Date (BZDAT)"
+
+  - name: stg_sap__bkpf
+    description: "Staging model for Accounting Document Header (BKPF). CDC-deduplicated to the latest version per document; fiscal period derived from the posting date."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - document_number
+            - fiscal_year
+    columns:
+      - name: company_code
+        description: "Company Code (BUKRS)"
+      - name: document_number
+        description: "Accounting Document Number (BELNR)"
+      - name: fiscal_year
+        description: "Fiscal Year (GJAHR)"
+      - name: document_type
+        description: "Document Type (BLART)"
+      - name: document_date
+        description: "Document Date in Document (BLDAT)"
+      - name: posting_date
+        description: "Posting Date in the Document (BUDAT)"
+      - name: fiscal_period
+        description: "Fiscal Period derived from posting date (April-start fiscal calendar)"
+      - name: entry_date
+        description: "Day On Which Accounting Document Was Entered (CPUDT)"
+      - name: entry_time
+        description: "Time of Entry (CPUTM)"
+      - name: user_name
+        description: "User Name (USNAM)"
+      - name: transaction_code
+        description: "Transaction Code (TCODE)"
+      - name: currency_key
+        description: "Currency Key (WAERS)"
+      - name: exchange_rate
+        description: "Exchange Rate (KURSF)"
+      - name: document_header_text
+        description: "Document Header Text (BKTXT)"
+      - name: reference_procedure
+        description: "Reference Procedure (AWTYP)"
+      - name: reference_key
+        description: "Reference Key (AWKEY)"

@@ -1,0 +1,117 @@
+version: 2
+
+models:
+  - name: int_asset_master_time_dependent
+    description: "Joins the asset master (ANLA) with its current time-dependent allocation (ANLZ). One row per asset."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+    columns:
+      - name: company_code
+        description: "Company Code"
+      - name: asset_main_number
+        description: "Main Asset Number"
+      - name: asset_sub_number
+        description: "Asset Subnumber"
+      - name: asset_class
+        description: "Asset Class from ANLA"
+      - name: asset_description
+        description: "Asset Description from ANLA"
+      - name: capitalization_date
+        description: "Capitalization Date of the asset"
+      - name: deactivation_date
+        description: "Deactivation Date of the asset"
+      - name: created_by
+        description: "Creator of the asset master record"
+      - name: created_date
+        description: "Creation date of the asset master record"
+      - name: changed_by
+        description: "Last changer of the asset master record"
+      - name: changed_date
+        description: "Last change date of the asset master record"
+      - name: first_acquisition_date
+        description: "Asset value date of first posting"
+      - name: inventory_number
+        description: "Inventory Number"
+      - name: vendor_account
+        description: "Vendor / creditor account number"
+      - name: account_determination
+        description: "Account Determination"
+      - name: is_deleted
+        description: "Flag indicating if the asset is marked for deletion"
+      - name: cost_center
+        description: "Cost Center of the current allocation"
+      - name: plant
+        description: "Plant of the current allocation"
+      - name: business_area
+        description: "Business Area of the current allocation"
+      - name: profit_center
+        description: "Profit Center of the current allocation"
+      - name: segment
+        description: "Segment for Segmental Reporting"
+      - name: activity_type
+        description: "Activity Type"
+      - name: valid_from_date
+        description: "Effective start date of the current allocation (ANLZ ADATU)"
+      - name: valid_to_date
+        description: "Effective end date of the current allocation (ANLZ BDATU)"
+
+  - name: int_asset_transactions_enriched
+    description: "Modern asset transactions (FAAT_DOC_IT) enriched with BKPF header details and a legacy ANEP fallback amount. One row per FAAT transaction line."
+    tests:
+      - unique_combination:
+          combination_of_columns:
+            - company_code
+            - asset_main_number
+            - asset_sub_number
+            - fiscal_year
+            - document_number
+            - document_line_item
+    columns:
+      - name: company_code
+        description: "Company Code"
+      - name: asset_main_number
+        description: "Main Asset Number"
+      - name: asset_sub_number
+        description: "Asset Subnumber"
+      - name: fiscal_year
+        description: "Fiscal Year of the transaction"
+      - name: document_number
+        description: "Accounting Document Number"
+      - name: document_line_item
+        description: "Document Line Item number"
+      - name: subledger_line_item_type
+        description: "Subledger Line Item Type"
+      - name: transaction_type_code
+        description: "Asset Transaction Type"
+      - name: depreciation_area
+        description: "Real Depreciation Area"
+      - name: asset_value_date
+        description: "Asset Value Date for depreciation calculation"
+      - name: amount_cc
+        description: "Transaction amount in company code currency (FAAT)"
+      - name: amount_gc
+        description: "Transaction amount in global currency (FAAT)"
+      - name: document_type
+        description: "Document Type from BKPF"
+      - name: posting_date
+        description: "Posting Date from BKPF"
+      - name: document_date
+        description: "Document Date from BKPF"
+      - name: fiscal_period
+        description: "Fiscal Period derived from BKPF posting date"
+      - name: user_name
+        description: "User who posted the transaction (BKPF)"
+      - name: transaction_code
+        description: "Transaction Code from BKPF"
+      - name: currency_key
+        description: "Currency Key from BKPF"
+      - name: document_header_text
+        description: "Document Header Text from BKPF"
+      - name: sequence_number
+        description: "Legacy ANEP sequence hint (aggregated)"
+      - name: anep_amount
+        description: "Legacy ANEP fallback amount (aggregated)"

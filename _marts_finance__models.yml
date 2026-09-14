@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: dim_asset
+    description: "Current-state asset dimension. One row per asset with its master attributes and current organizational assignment (cost center, plant, profit center, segment)."
+    columns:
+      - name: asset_key
+        description: "Surrogate primary key for the asset (hash of company_code, asset_main_number, asset_sub_number)."
+        tests:
+          - unique
+          - not_null
+      - name: company_code
+        description: "Company Code"
+      - name: asset_main_number
+        description: "Main Asset Number"
+      - name: asset_sub_number
+        description: "Asset Subnumber"
+      - name: asset_id
+        description: "Human-readable asset id (main-sub)."
+      - name: asset_description
+        description: "Asset Description"
+      - name: asset_class
+        description: "Asset Class"
+      - name: capitalization_date
+        description: "Capitalization Date"
+      - name: deactivation_date
+        description: "Deactivation Date"
+      - name: first_acquisition_date
+        description: "First acquisition/value date"
+      - name: inventory_number
+        description: "Inventory Number"
+      - name: vendor_account
+        description: "Vendor / creditor account number"
+      - name: account_determination
+        description: "Account Determination"
+      - name: cost_center
+        description: "Cost Center (current allocation)"
+      - name: plant
+        description: "Plant (current allocation)"
+      - name: business_area
+        description: "Business Area (current allocation)"
+      - name: profit_center
+        description: "Profit Center (current allocation)"
+      - name: segment
+        description: "Segment (current allocation)"
+      - name: activity_type
+        description: "Activity Type"
+      - name: asset_category
+        description: "Derived asset category from asset class."
+      - name: asset_status
+        description: "Derived lifecycle status (Capitalized / Deactivated / Under Construction)."
+      - name: is_deleted
+        description: "Asset deletion flag."
+
+  - name: fct_asset_transactions
+    description: "Fact table of asset transactions from FAAT_DOC_IT, enriched with BKPF header details and a legacy ANEP fallback amount. One row per transaction line."
+    columns:
+      - name: transaction_key
+        description: "Surrogate primary key for the transaction line."
+        tests:
+          - unique
+          - not_null
+      - name: asset_key
+        description: "Foreign key to dim_asset."
+        tests:
+          - relationships:
+              to: ref('dim_asset')
+              field: asset_key
+      - name: company_code
+        description: "Company Code"
+      - name: fiscal_year
+        description: "Fiscal Year"
+      - name: fiscal_period
+        description: "Fiscal Period (from BKPF posting date)"
+      - name: document_number
+        description: "Accounting Document Number"
+      - name: document_line_item
+        description: "Document Line Item"
+      - name: subledger_line_item_type
+        description: "Subledger Line Item Type"
+      - name: depreciation_area
+        description: "Depreciation Area"
+      - name: transaction_type_code
+        description: "Asset Transaction Type code"
+      - name: posting_date
+        description: "Posting Date"
+      - name: document_date
+        description: "Document Date"
+      - name: asset_value_date
+        description: "Asset Value Date"
+      - name: document_type
+        description: "Document Type"
+      - name: transaction_code
+        description: "Transaction Code"
+      - name: user_name
+        description: "User who posted the transaction"
+      - name: currency_key
+        description: "Currency Key"
+      - name: document_header_text
+        description: "Document Header Text"
+      - name: amount_in_local_currency
+        description: "Transaction amount in company code currency (FAAT, ANEP fallback)."
+      - name: amount_in_global_currency
+        description: "Transaction amount in global currency."
+      - name: transaction_category
+        description: "Derived category (Acquisition / Retirement / Transfer / Depreciation / Other)."

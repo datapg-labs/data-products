@@ -1,0 +1,18 @@
+name: 'asset_transactions'
+version: '1.0.0'
+config-version: 2
+profile: 'asset_transactions'
+model-paths: ["models"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  asset_transactions:
+    # Tables, not views. The Iceberg REST catalogue behind this warehouse does
+    # not implement the Views API: a GET for a view returns HTTP 200 with an
+    # empty body instead of a 404, and the client fails parsing that into a
+    # LoadViewResponse rather than treating the view as absent. Every view model
+    # in this project failed on it, exactly as they did in general_ledger.
+    +materialized: table
+    +file_format: iceberg
+    marts:
+      +materialized: table
