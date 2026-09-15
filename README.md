@@ -10,32 +10,43 @@ own project:
 
 | Project | What it builds | Reads | On the platform |
 |---|---|---|---|
-| [`asset_transactions`](asset_transactions/) | Fixed-asset transactions from the SAP asset tables | `synsap_finance_raw` | Runs daily |
-| [`sub_ledger`](sub_ledger/) | SAP open/cleared item indexes (BSID, BSAD, BSIK, BSAK) derived from BSEG | `synsap_finance_raw` | In the pipeline, schedule currently paused |
+| [`asset_transactions`](asset_transactions/) | Fixed-asset transactions from the SAP asset tables | `synsap_finance_raw` | Runs daily in the platform pipeline |
+| [`sub_ledger`](sub_ledger/) | SAP open/cleared item indexes (BSID, BSAD, BSIK, BSAK) derived from BSEG | `synsap_finance_raw` | In the platform pipeline, schedule currently paused |
 
-Both read only tables you can query. Their `profiles/profiles.yml` targets the platform's
-own schemas, which you cannot write to: when you copy one, change `schema:` to your own
-`pgXXXX` schema.
+They are written for dbt-spark, which the platform itself uses. **Your projects run on
+dbt-trino** (next section), so borrow their structure, tests and documentation, and
+write your SQL for Trino.
 
-## Read this first: execution is not wired up yet
+## What happens after merge
 
-You can write dbt projects here and have them reviewed and merged. **Learner projects do
-not run on the platform yet.** As of 2026-09-15 there is no path that executes them:
+Every top-level project with a `dbt_project.yml` on `main` — except the two samples — is
+built **once a day** on the platform, in the Airflow DAG `learner_dbt_projects`. You can
+watch the runs and read the logs in Airflow.
 
-- The JupyterHub image ships pandas, SQLAlchemy, pyspark and the Trino client — **but no
-  dbt**
-- GitHub-hosted CI cannot reach the platform, so it cannot build against the data
-- The platform runs its own projects from a separate, private pipeline
+| | |
+|---|---|
+| Output | `dbt build` into its own schema `lp_<project>` (hyphens become underscores), readable by every learner in Hue |
+| Engine | **dbt-trino**, catalog `iceberg` — write Trino SQL |
+| Reads | Only the shared schemas: `crypto_currencies_raw`, `synsap_finance_raw`, `fin_internal_jde` |
+| Profile | Supplied by the platform; your `profiles/` folder is ignored |
+| Packages | Not available — the sandbox has no internet, so a `packages.yml` fails the build |
+| Runtime | 20 minutes; it is stopped after that |
 
-This is stated plainly rather than implied away, because discovering it halfway through
-building a model is a waste of your afternoon.
+Point sources at the shared schemas by name, for example:
 
-**What you can do today:** write models and tests, read the samples, and try the SQL
-against the real tables in Hue. That is genuinely useful — most of the work in a model is
-getting the SQL right — but it is not a full loop, and you should know that going in.
+```yaml
+sources:
+  - name: sap
+    schema: synsap_finance_raw
+    tables:
+      - name: bseg
+```
 
-**If you want a full loop today**, use [`ingestion`](https://github.com/datapg-labs/ingestion)
-instead. Kafka works end to end.
+## Try it before you open a pull request
+
+Try your SQL against the real tables in **Hue** — it is the same Trino engine the build
+uses. Once merged, the next daily build shows whether the whole project compiles and its
+tests pass.
 
 ## Recommended: a data contract for every product
 
@@ -43,23 +54,7 @@ Describe what your project publishes in
 [`data-contracts`](https://github.com/datapg-labs/data-contracts), under
 `product_contracts/`, and link it from your README.
 
-## Querying the lakehouse meanwhile
-
-You do not need dbt to explore the data. Open **Hue** from the launchpad and query Trino
-directly. That is the fastest way to understand the tables before you model them, and it
-is the same engine dbt would target.
-
-## What would close the gap
-
-1. Add `dbt-trino` to the notebook image, so learners can run `dbt build` against their
-   own schema.
-2. A platform-side job that builds a merged project against a sandbox schema — never a
-   self-hosted runner reachable from pull requests.
-
-If you would find one of these useful, say so in an issue. It is a better signal than a
-guess.
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). In short: one folder per project, clone locally,
-branch, and open a pull request — everything is reviewed before it merges.
+branch, and open a pull request — a reviewer who isn't the author approves it.
