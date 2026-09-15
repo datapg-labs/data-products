@@ -3,15 +3,15 @@
 dbt projects — the modelling layer that turns raw ingested data into something
 worth querying.
 
-This repository is a **template**. Click **Use this template** on GitHub to create
-your own copy under your own account, and do your work there — see
+This is a shared repository: projects live side by side in `projects/`, changes go
+through pull requests, and teammates review each other's work. See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Read this first: execution is not wired up yet
 
-You can write dbt models in your own repository and read the reference projects
-below. **Your models will not run on the platform yet.** As of 2026-09-12 there is
-no path that executes a learner's dbt project:
+You can write dbt models in `projects/` and have them reviewed and merged. **They will
+not run on the platform yet.** As of 2026-09-12 there is no path that executes a
+learner's dbt project:
 
 - The JupyterHub image ships pandas, SQLAlchemy, pyspark and the Trino client —
   **but no dbt**
@@ -21,39 +21,35 @@ no path that executes a learner's dbt project:
 This is stated plainly rather than implied away, because discovering it halfway
 through building a model is a waste of your afternoon.
 
-**What you can do today:** write models and tests, read the reference projects, and
-try the SQL against the real tables in Hue. That is genuinely useful — most of the
-work in a model is getting the SQL right — but it is not a full loop, and you
-should know that going in.
+**What you can do today:** write models and tests, review each other's, read the
+reference projects, and try the SQL against the real tables in Hue. That is genuinely
+useful — SQL review is most of the job — but it is not a full loop, and you should
+know that going in.
 
 **If you want a full loop today**, use [`ingestion`](https://github.com/datapg-labs/ingestion)
 instead. Kafka works end to end.
 
-## Start your own
-
-Create your repository from this template. You get both reference projects as a
-starting point; add your own beside them:
+## Layout
 
 ```
-my_project/
-  dbt_project.yml
-  profiles/profiles.yml     schema: your own pgXXXX schema
-  models/
-  README.md
+reference/          maintained dbt projects — read, don't edit
+  sub_ledger/
+  asset_transactions/
+projects/<name>/    learner projects — README.md lists the authors
 ```
 
 ## Reference projects
 
-Two complete dbt projects sit at the top of the repo as worked examples. Read them
-before starting your own:
+Two complete dbt projects, kept in shape as worked examples. Read them before
+starting your own:
 
 | Project | What it builds | Reads |
 |---|---|---|
-| [`sub_ledger`](sub_ledger/) | SAP open/cleared item indexes (BSID, BSAD, BSIK, BSAK) derived from BSEG | `synsap_finance_raw` |
-| [`asset_transactions`](asset_transactions/) | Fixed-asset transactions from the SAP asset tables | `synsap_finance_raw` |
+| [`sub_ledger`](reference/sub_ledger/) | SAP open/cleared item indexes (BSID, BSAD, BSIK, BSAK) derived from BSEG | `synsap_finance_raw` |
+| [`asset_transactions`](reference/asset_transactions/) | Fixed-asset transactions from the SAP asset tables | `synsap_finance_raw` |
 
 Both read only tables you can query. Their `profiles/profiles.yml` targets the
-platform's own schemas, which you cannot write to: if you adapt one, change
+platform's own schemas, which you cannot write to: if you start from one, change
 `schema:` to your own `pgXXXX` schema.
 
 ## Querying the lakehouse meanwhile
@@ -68,17 +64,15 @@ Either would work, and both are small:
 
 1. Add `dbt-trino` to the notebook image, so learners can run `dbt build` against
    their own schema.
-2. A platform-side runner that builds a learner's project against a sandbox schema
-   on request — never a self-hosted runner in a learner's repository; see
+2. A platform-side runner that builds a merged project against a sandbox schema —
+   never a self-hosted runner reachable from pull requests; see
    [CONTRIBUTING.md](CONTRIBUTING.md).
-
-Meanwhile, `dbt parse` in your own repository's CI needs no platform access and
-catches most mistakes before you run anything.
 
 If you would find one of these useful, say so in an issue. It is a better signal
 than a guess.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Your projects live in your own repository;
-pull requests here are for improving the template and the reference projects.
+See [CONTRIBUTING.md](CONTRIBUTING.md). In short: work in `projects/<name>/` with your
+handle on its `Authors:` line, branch and open a pull request; a teammate reviews it and
+a maintainer merges.
