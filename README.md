@@ -3,34 +3,43 @@
 dbt projects — the modelling layer that turns raw ingested data into something
 worth querying.
 
+This repository is a **template**. Click **Use this template** on GitHub to create
+your own copy under your own account, and do your work there — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Read this first: execution is not wired up yet
 
-You can write models here, and they will be reviewed and merged. **They will not
-run.** As of 2026-09-12 there is no path that executes a learner's dbt project:
+You can write dbt models in your own repository and read the reference projects
+below. **Your models will not run on the platform yet.** As of 2026-09-12 there is
+no path that executes a learner's dbt project:
 
-- The JupyterHub image ships pandas, SQLAlchemy and pyspark — **no dbt, and no
-  Trino client**
-- There is no CI job that builds pull requests
+- The JupyterHub image ships pandas, SQLAlchemy, pyspark and the Trino client —
+  **but no dbt**
+- GitHub-hosted CI cannot reach the platform, so it cannot build against the data
 - The platform's own dbt pipelines run from a separate, private repository
 
 This is stated plainly rather than implied away, because discovering it halfway
 through building a model is a waste of your afternoon.
 
-**What you can do today:** write models and tests, have them reviewed, and read
-the existing ones. That is genuinely useful — SQL review is most of the job — but
-it is not a full loop, and you should know that going in.
+**What you can do today:** write models and tests, read the reference projects, and
+try the SQL against the real tables in Hue. That is genuinely useful — most of the
+work in a model is getting the SQL right — but it is not a full loop, and you
+should know that going in.
 
 **If you want a full loop today**, use [`ingestion`](https://github.com/datapg-labs/ingestion)
 instead. Kafka works end to end.
 
-## Layout
+## Start your own
+
+Create your repository from this template. You get both reference projects as a
+starting point; add your own beside them:
 
 ```
-<your-pg-id>/
-  my_project/
-    dbt_project.yml
-    models/
-    README.md
+my_project/
+  dbt_project.yml
+  profiles/profiles.yml     schema: your own pgXXXX schema
+  models/
+  README.md
 ```
 
 ## Reference projects
@@ -59,13 +68,17 @@ Either would work, and both are small:
 
 1. Add `dbt-trino` to the notebook image, so learners can run `dbt build` against
    their own schema.
-2. Add a GitHub-hosted CI workflow that runs `dbt parse` and `dbt build` against
-   a sandbox schema on pull requests. No self-hosted runners — see
+2. A platform-side runner that builds a learner's project against a sandbox schema
+   on request — never a self-hosted runner in a learner's repository; see
    [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Meanwhile, `dbt parse` in your own repository's CI needs no platform access and
+catches most mistakes before you run anything.
 
 If you would find one of these useful, say so in an issue. It is a better signal
 than a guess.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Your projects live in your own repository;
+pull requests here are for improving the template and the reference projects.
